@@ -1,0 +1,19 @@
+To run the simulation program:
+You should 
+1.new Simulation= new Simulation() 
+2.then use simu_with_para(double ph,double pl,double pa1,double pa2,double pr2d,double pr21,double mu1,double mu2,double lambda)
+
+
+public static void main(String[] args) 
+	{
+		// TODO Auto-generated method stub
+		Simulation s = new Simulation();
+		//s.simu_with_para(0.4,0.6,0.5,0.5,0.25,0.75,40,50,1);
+		for(int i=1;i<=10;i++)
+		{
+			System.out.println("入="+i+"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			s=new Simulation();
+			s.simu_with_para(0.4,0.6,0.5,0.5,0.25,0.75,40,50,i);
+			s.run();
+		}
+	}

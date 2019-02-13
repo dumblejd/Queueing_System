@@ -1,0 +1,13 @@
+To run the simulation program:
+You should 
+1.new Simulation= new Simulation() 
+2.then use simu_with_para(int capacity, int processor, int limit,double mu, double lambda_user)
+for the requirement you should do
+1.Simulation s = new Simulation();
+2.s.simu_with_para(4,2,2,3.0,4.0);
+
+
+To see the theoretical value (Just for particular case above)
+You should
+1.Theoretical a =new Theoretical();
+2.a.ten();

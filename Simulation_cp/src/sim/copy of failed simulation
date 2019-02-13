@@ -1,0 +1,99 @@
+package sim;
+
+public class Simulation {
+	  EventList Elist;                // Create event list
+	  int ARR=1;                 // Define the event types arr=1 depart=0
+	  int DEP=0;
+	  
+	  int capacity=4;     //Capacity
+	  int processor=2;    // M
+	  int limit_block=2;  //L
+	  
+	  double lambda_user = 4.0;            // Arrival rate
+	  double lambda_admin = 0.8;          
+			  
+	  double mu = 3.0;                // Service rate
+
+	  double clock = 0.0;             // System clock
+	  int N = 0;                      // Number of customers in system
+	  int Ndep = 0;                   // Number of departures from system
+	  double EN = 0.0;                // For calculating E[N]
+
+	  boolean done = false;                   // End condition satisfied?
+	  Random rd= new Random();
+	  Simulation()
+	  {
+		  this.Elist=new EventList();
+
+	  }
+	  
+	  public void run()
+	  {
+		  this.Elist.insert(clock+rd.exp_rv(lambda_user),ARR,0);
+		  while (!done)
+		  {
+		    //Event e_temp = new Event(Elist.getfirst().getTime(),Elist.getfirst().getType(),Elist.getfirst().getPriority());               // Get next Event from list
+			if(N<=processor)    //to process the event in queue if possible
+			{
+				Elist.EventArray.get(0).wait=0;
+			}
+			
+			
+			 Event e_temp = Elist.get_next_not_wait(); //return address
+			double prev = clock;                      // Store old clock value
+		    clock = e_temp.getTime();                 // Update system clock 
+
+		    switch (e_temp.getType()) 
+		    {
+		    case 1:                                 	// If arrival 
+		      EN += N*(clock-prev);                   //  update system statistics
+		    	  if(N>=capacity)    						// Capacity
+		    	  {
+		    		  break;
+		    	  }
+		    	  if(N>=limit_block&&e_temp.getPriority()<1) //more than L
+		    	  {
+		    		  break;
+		    	  }
+		      N++;                                    //  update system size
+		      Elist.insert(clock+rd.exp_rv(lambda_user),ARR,0); //  generate next arrival
+		      Elist.insert(clock+rd.exp_rv(lambda_admin),ARR,1); //  generate next arrival
+		      if (N<=processor) {                             // If this is the only customer
+		    	  	if(e_temp.wait==1)
+		    	  	{
+		    	  		e_temp.wait=0;
+		    	  	}
+		        Elist.insert(clock+rd.exp_rv(mu),DEP,e_temp.getPriority());   //  generate its departure event
+		        break;
+		      } 
+		      if(N>processor)
+		      {
+		    	  	e_temp.wait=1;
+		      }
+		      break;
+		    case 0:                                 // If departure
+		      EN += N*(clock-prev);                   //  update system statistics
+		      N--;                                    //  decrement system size
+		      Ndep++;                                 //  increment num. of departures
+		      if (N > 0) {                            // If customers r-emain
+		        Elist.insert(clock+rd.exp_rv(mu),DEP,Elist.find_next_arr().priority);   //  generate next departure
+		      } 
+		      break;
+		    }
+		    if(e_temp.wait==0)
+		    {
+		     Elist.delete();//delete CurrentEvent;
+		    }
+		    if (Ndep > 100000) done=true;        // End condition
+		  }
+		  System.out.println(EN/clock);
+	  }
+	public static void main(String[] args) 
+	{
+		// TODO Auto-generated method stub
+		Simulation s = new Simulation();
+		s.run();
+		
+	}
+
+}
